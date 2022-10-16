@@ -14,7 +14,7 @@ function ListCard(props) {
     const [ text, setText ] = useState("");
     store.history = useHistory();
     const { idNamePair, selected } = props;
-
+    
     function handleLoadList(event) {
         if (!event.target.disabled) {
             let _id = event.target.id;
@@ -25,7 +25,13 @@ function ListCard(props) {
             store.setCurrentList(_id);
         }
     }
-
+    function handleDeleteList(event) {
+        event.stopPropagation();
+    
+        let id = idNamePair._id
+        console.log(id)
+        store.showDeleteListModal(id);
+    }
     function handleToggleEdit(event) {
         event.stopPropagation();
         toggleEdit();
@@ -75,6 +81,7 @@ function ListCard(props) {
                 type="button"
                 id={"delete-list-" + idNamePair._id}
                 className="list-card-button"
+                onClick={handleDeleteList}
                 value={"\u2715"}
             />
             <input
