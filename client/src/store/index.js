@@ -110,6 +110,31 @@ export const useGlobalStore = () => {
     // DRIVE THE STATE OF THE APPLICATION. WE'LL CALL THESE IN 
     // RESPONSE TO EVENTS INSIDE OUR COMPONENTS.
 
+    store.createNewList = function(){
+        let playlistNum = store.idNamePairs.length + 1;
+        let newPlayList = {
+            name: "Untitled " + playlistNum,
+            songs:[]
+        };
+        console.log("hi")
+        async function asyncCreateNewList(newPlayList){
+            const response = await api.createPlaylist(newPlayList);
+            if(response.data.success){
+                let idNum = store.idNamePairs.push(response.data.playlist);
+                
+                storeReducer({
+                    type: GlobalStoreActionType.CREATE_NEW_LIST,
+                    payload:{
+                        idNamePairs: idNum,
+                        playlist: response.data.playlist
+                    },
+                });
+                let playlistID = response.data.playlist._id
+                store.setCurrentList(playlistID)
+            }
+        }
+        asyncCreateNewList(newPlayList);
+    }
     // THIS FUNCTION PROCESSES CHANGING A LIST NAME
     store.changeListName = function (id, newName) {
         // GET THE LIST
