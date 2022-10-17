@@ -39,6 +39,7 @@ createPlaylist = (req, res) => {
             })
         })
 }
+
 deletePlaylist = async (req, res) => {
     console.log(req.params.id)
     await Playlist.findByIdAndDelete({ _id: req.params.id }, function(err, list){
@@ -49,11 +50,48 @@ deletePlaylist = async (req, res) => {
         return res.status(200).json({ success: true})
     }).catch(err => console.log(err))
 }
-updatePlaylist = async (req, res) =>{
+
+updatePlaylistById = async (req, res) =>{
     const body = req.body;
+    console.log(body)
+    if (!body) {
+        console.log(err)
+        return res.status(400).json({
+            success: false,
+            error: 'Updated Information must be provided',
+        })
+    }
+    await Playlist.findOne({ _id: req.params.id }, (err, list) => {
+        
+        if (err) {
+            console.log(err)
+            return res.status(400).json({ success: false, error: err, message: "Playlist not found"})
+        }
+        console.log("body.name: " + body.name)
+        console.log(body)
+        list.name = body.name;
+        list.songs = body.songs;
 
-
+        list
+          .save()
+          .then(() => {
+              return res.status(201).json({
+                  success: true,
+                  playlist: list,
+                  message: 'Playlist Updated!',
+              })
+          })
+          .catch(error => {
+            console.log(error)
+              return res.status(400).json({
+                  success: false,
+                  error,
+                  message: 'Playlist Not Updated!',
+              })
+          })
+    })
 }
+
 getPlaylistById = async (req, res) => {
     await Playlist.findOne({ _id: req.params.id }, (err, list) => {
         if (err) {
@@ -107,5 +145,6 @@ module.exports = {
     getPlaylists,
     getPlaylistPairs,
     getPlaylistById,
-    deletePlaylist
+    deletePlaylist,
+    updatePlaylistById
 }

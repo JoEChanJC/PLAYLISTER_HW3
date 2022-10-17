@@ -52,6 +52,16 @@ export const useGlobalStore = () => {
 
                 });
             }
+            case GlobalStoreActionType.UPDATE_PLAYLIST_SONGS: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: payload,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    selectedPlaylist: store.selectedPlaylist
+
+                });
+            }
             // STOP EDITING THE CURRENT LIST
             case GlobalStoreActionType.CLOSE_CURRENT_LIST: {
                 return setStore({
@@ -145,7 +155,40 @@ export const useGlobalStore = () => {
         }
         asyncCreateNewList(newPlayList);
     }
+    store.addSong = function (){
+        let id = store.currentList._id
+        let newSong = {
+            title: "Untitled",
+            artist: "Untitled",
+            youTubeId: "dQw4w9WgXcQ"
+        };
+        async function asyncAddSong(id) {
+            let response = await api.getPlaylistById(id);
+            let playlist = response.data.playlist
+            console.log(playlist)
+            if (response.data.success) {
+                let currentPlaylist = store.currentList
+                currentPlaylist.songs.push(newSong)
 
+                playlist.songs = currentPlaylist.songs
+                console.log(currentPlaylist)
+                console.log(playlist)
+                async function updatePlaylist(playlist) {
+                    response = await api.updatePlaylistById(id, playlist);
+                    if (response.data.success) {
+                        console.log(response.data.playlist)
+                        storeReducer({
+                            type: GlobalStoreActionType.UPDATE_PLAYLIST_SONGS,
+                            payload: currentPlaylist
+                        });    
+                    }
+                }
+                updatePlaylist(playlist)
+            }
+        }
+        asyncAddSong(id);
+    }
+    
     store.showDeleteListModal = function(id) {  
         console.log(id)
         async function asyncshowDeleteListModal(id) {
@@ -190,7 +233,7 @@ export const useGlobalStore = () => {
         async function asyncChangeListName(id) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
-                let playlist = response.data.playist;
+                let playlist = response.data.playlist;
                 playlist.name = newName;
                 async function updateList(playlist) {
                     response = await api.updatePlaylistById(playlist._id, playlist);
@@ -199,6 +242,7 @@ export const useGlobalStore = () => {
                             response = await api.getPlaylistPairs();
                             if (response.data.success) {
                                 let pairsArray = response.data.idNamePairs;
+                                console.log(pairsArray)
                                 storeReducer({
                                     type: GlobalStoreActionType.CHANGE_LIST_NAME,
                                     payload: {
@@ -263,6 +307,7 @@ export const useGlobalStore = () => {
     store.getPlaylistSize = function() {
         return store.currentList.songs.length;
     }
+    
     store.undo = function () {
         tps.undoTransaction();
     }
