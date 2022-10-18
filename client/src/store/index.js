@@ -214,9 +214,9 @@ export const useGlobalStore = () => {
         });
         console.log(store.indexOfSong)
 
-        document.getElementById("editTitle").value = store.currentList.songs[store.indexOfSong].title
-        document.getElementById("editArtist").value = store.currentList.songs[store.indexOfSong].artist
-        document.getElementById("editYouTubeID").value = store.currentList.songs[store.indexOfSong].youTubeId
+        document.getElementById("editTitle").value = store.currentList.songs[index].title
+        document.getElementById("editArtist").value = store.currentList.songs[index].artist
+        document.getElementById("editYouTubeID").value = store.currentList.songs[index].youTubeId
         let modal = document.getElementById("edit-song-modal")
         modal.classList.add("is-visible")
 
@@ -302,6 +302,34 @@ export const useGlobalStore = () => {
             }
         }
         asyncDeleteSongModal(id);
+    }
+    store.moveSong = function (startIndex, endIndex){
+        let id = store.currentList._id
+        async function asyncMoveSong(id) {
+            let response = await api.getPlaylistById(id);
+            
+
+            if (response.data.success) {
+                let playlist = response.data.playlist
+                let temp = playlist.songs[startIndex]
+                playlist.songs[startIndex] = playlist.songs[endIndex]
+                playlist.songs[endIndex] = temp
+                async function updatePlaylist(playlist) {
+                    response = await api.updatePlaylistById(id, playlist);
+                    if (response.data.success) {
+                        console.log(response.data.playlist)
+                        storeReducer({
+                            type: GlobalStoreActionType.UPDATE_PLAYLIST_SONGS,
+                            payload: playlist
+                        });
+                    }
+                }
+                updatePlaylist(playlist)
+            }
+        }
+        asyncMoveSong(id);
+        
+        
     }
     store.showDeleteListModal = function (id) {
         async function asyncshowDeleteListModal(id) {

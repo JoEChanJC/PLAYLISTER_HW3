@@ -126,7 +126,15 @@ body {
   color: #666666;
   pointer-events: none;
 }
-
+.playlister-song, .playlister-song-dragged-to { 
+  display: inline-block;
+  font-size: 24pt;
+  margin: 8px;
+  padding: 20px;
+  border-radius: 25px;
+  background-color: var(--swatch-complement);
+  color:black;
+}
 .unselected-list-card:hover {
   cursor: pointer;
   background-color: var(--swatch-contrast);
