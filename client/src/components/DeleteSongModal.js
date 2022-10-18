@@ -14,7 +14,7 @@ function DeleteSongModal(props) {
         store.confirmDeleteSong()
     }
     let name = ""
-    if(store.indexOfSong != -1 && store.indexOfSong < store.currentList.songs.length){
+    if(store.indexOfSong !== -1 && store.indexOfSong < store.currentList.songs.length){
         name  = store.currentList.songs[store.indexOfSong].title
     }
     return (

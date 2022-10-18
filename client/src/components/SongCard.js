@@ -4,6 +4,8 @@ import { GlobalStoreContext } from '../store'
 function SongCard(props) {
     const { store } = useContext(GlobalStoreContext);
 
+    const { song, index } = props;
+
     let cardClass = "list-card unselected-list-card";
 
     function handleDeleteSong(event){
@@ -12,9 +14,11 @@ function SongCard(props) {
         store.showDeleteSongModal(index);
     }
     function handleClick(event){
+        if(event.detail === 1) {
+            store.updateIndex(index)
+        }
         if (event.detail === 2) {
             event.stopPropagation();
-            
             store.showEditSongModal(index)
         }
     }
