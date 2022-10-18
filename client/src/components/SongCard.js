@@ -45,16 +45,19 @@ function SongCard(props) {
         let endIndex = end.id;
         endIndex = endIndex.substring(end.id.indexOf("-") + 1);
         endIndex = endIndex.replace('-card','')
+        endIndex = parseInt(endIndex)
         let startIndex = event.dataTransfer.getData("song");
         startIndex = startIndex.substring(startIndex.indexOf("-") + 1);
         startIndex = startIndex.replace('-card','')
+        startIndex = parseInt(startIndex)
         console.log("TARGET INDEX: " + endIndex)
         console.log("SOURCE ID: " + startIndex)
         
         setIsDragging(false)
         setDraggedTo(false)
-
-        store.moveSong(parseInt(startIndex), parseInt(endIndex))
+        if(startIndex !== endIndex){
+            store.addMoveSongTransaction(parseInt(startIndex), parseInt(endIndex))
+        }
     }
 
     let itemClass = "playlister-song";

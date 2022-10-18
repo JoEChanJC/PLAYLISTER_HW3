@@ -16,7 +16,7 @@ function EditSongModal(props) {
         let title = document.getElementById("editTitle").value
         let artist = document.getElementById("editArtist").value
         let youtubeid = document.getElementById("editYouTubeID").value
-        store.confirmEditSong(title, artist, youtubeid)
+        store.addEditSongTransaction(title, artist, youtubeid)
     }
     function handleNewTitle(event) {
         document.getElementById("editTitle").value = event.target.value
@@ -28,18 +28,7 @@ function EditSongModal(props) {
         document.getElementById("editYouTubeID").value = event.target.value
     }
     
-    // if(store.indexOfSong !== -1 && store.indexOfSong < store.currentList.songs.length){
-    //     title  = store.currentList.songs[store.indexOfSong].title
-    //     console.log("pls work")
-    // }
-    let artist = ""
-    if(store.indexOfSong !== -1 && store.indexOfSong < store.currentList.songs.length){
-        artist  = store.currentList.songs[store.indexOfSong].artist
-    }
-    let youtubeid = ""
-    if(store.indexOfSong !== -1 && store.indexOfSong < store.currentList.songs.length){
-        youtubeid  = store.currentList.songs[store.indexOfSong].youTubeId
-    }
+    
     return (
         <div 
                 class="modal" 
@@ -56,12 +45,12 @@ function EditSongModal(props) {
                         </div>
                         <div class="modal-left">
                             <div class="modal-left-content">
-                                Artist: <input type="text" defaultValue = {artist} class="edit-song-input" id="editArtist" onChange={handleNewArtist}></input>
+                                Artist: <input type="text" class="edit-song-input" id="editArtist" onChange={handleNewArtist}></input>
                             </div>
                         </div>
                         <div class="modal-left">
                             <div class="modal-left-content">
-                                YouTube ID: <input type="text" defaultValue = {youtubeid} class="edit-song-input" id="editYouTubeID" onChange={handleNewYoutubeID}></input>
+                                YouTube ID: <input type="text" class="edit-song-input" id="editYouTubeID" onChange={handleNewYoutubeID}></input>
                             </div>
                         </div>
                         <div class="modal-south">

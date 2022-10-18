@@ -13,7 +13,7 @@ function EditToolbar() {
 
     let enabledButtonClass = "playlister-button";
     function handleAdd(){
-        store.addSong();
+        store.addAddSongTransaction();
     }
     function handleUndo() {
         store.undo();

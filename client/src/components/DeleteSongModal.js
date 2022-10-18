@@ -11,7 +11,7 @@ function DeleteSongModal(props) {
     }
     function handleConfirmDeleteSong(event){
         event.stopPropagation()
-        store.confirmDeleteSong()
+        store.addRemoveSongTransaction()
     }
     let name = ""
     if(store.indexOfSong !== -1 && store.indexOfSong < store.currentList.songs.length){
