@@ -39,8 +39,12 @@ function ListCard(props) {
 
     function toggleEdit() {
         let newActive = !editActive;
+        let addListButton = document.getElementById("add-list-button")
+        addListButton.disabled = false;
         if (newActive) {
             store.setIsListNameEditActive();
+            let addListButton = document.getElementById("add-list-button")
+            addListButton.disabled = true;
         }
         setEditActive(newActive);
     }

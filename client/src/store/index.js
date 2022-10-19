@@ -23,7 +23,8 @@ export const GlobalStoreActionType = {
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION",
-    MARK_SONG: "MARK_SONG"
+    MARK_SONG: "MARK_SONG",
+    MODAL_STATUS: "MODAL_STATUS"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -40,6 +41,7 @@ export const useGlobalStore = () => {
         listNameActive: false,
         selectedPlaylist: null,
         indexOfSong: -1,
+        isModalShown: false
     });
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
@@ -55,7 +57,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     selectedPlaylist: null,
-                    indexOfSong: -1
+                    indexOfSong: -1,
+                    isModalShown: false
                 });
             }
             case GlobalStoreActionType.UPDATE_PLAYLIST_SONGS: {
@@ -65,7 +68,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     selectedPlaylist: store.selectedPlaylist,
-                    indexOfSong: -1
+                    indexOfSong: -1,
+                    isModalShown: false
                 });
             }
             // STOP EDITING THE CURRENT LIST
@@ -76,7 +80,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     selectedPlaylist: store.selectedPlaylist,
-                    indexOfSong: -1
+                    indexOfSong: -1,
+                    isModalShown: false
                 })
             }
             // CREATE A NEW LIST
@@ -87,7 +92,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter + 1,
                     listNameActive: false,
                     selectedPlaylist: store.selectedPlaylist,
-                    indexOfSong: -1
+                    indexOfSong: -1,
+                    isModalShown: false
                 })
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -98,7 +104,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     selectedPlaylist: store.selectedPlaylist,
-                    indexOfSong: -1
+                    indexOfSong: -1,
+                    isModalShown: store.isModalShown
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -109,7 +116,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     selectedPlaylist: payload,
-                    indexOfSong: -1
+                    indexOfSong: -1,
+                    isModalShown: true
                 });
             }
             // PREPARE TO DELETE A SONG
@@ -120,7 +128,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     selectedPlaylist: store.selectedPlaylist,
-                    indexOfSong: payload
+                    indexOfSong: payload,
+                    isModalShown: true
                 });
             }
             // UPDATE A LIST
@@ -131,7 +140,8 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     selectedPlaylist: store.selectedPlaylist,
-                    indexOfSong: -1
+                    indexOfSong: -1,
+                    isModalShown: false
                 });
             }
             // START EDITING A LIST NAME
@@ -142,7 +152,19 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: true,
                     selectedPlaylist: store.selectedPlaylist,
-                    indexOfSong: -1
+                    indexOfSong: -1,
+                    isModalShown: false
+                });
+            }
+            case GlobalStoreActionType.MODAL_STATUS: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    selectedPlaylist: store.selectedPlaylist,
+                    indexOfSong: store.indexOfSong,
+                    isModalShown: payload
                 });
             }
             default:
@@ -430,9 +452,11 @@ export const useGlobalStore = () => {
         }
         asyncDeleteListModal(id);
     }
+    
     // THIS FUNCTION PROCESSES CHANGING A LIST NAME
     store.changeListName = function (id, newName) {
         // GET THE LIST
+        
         async function asyncChangeListName(id) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
@@ -453,10 +477,19 @@ export const useGlobalStore = () => {
                                         playlist: playlist
                                     }
                                 });
+                                storeReducer({
+                                    type: GlobalStoreActionType.CHANGE_LIST_NAME,
+                                    payload: {
+                                        idNamePairs: pairsArray,
+                                        playlist: null
+                                    }
+                                });
                             }
+                            
                         }
                         getListPairs(playlist);
                     }
+                    
                 }
                 updateList(playlist);
             }
@@ -507,6 +540,23 @@ export const useGlobalStore = () => {
         }
         asyncSetCurrentList(id);
     }
+    store.canUndo = function () {
+        let undoButton = document.getElementById("undo-button")
+        if(tps.getUndoSize() <= 0){
+            return true
+        }
+        else{
+            return false
+        }
+    }
+    store.canRedo = function() {
+        if(tps.getRedoSize() <= 0){
+            return true
+        }
+        else{
+            return false
+        }
+    }
     store.getPlaylistSize = function () {
         return store.currentList.songs.length;
     }
@@ -534,6 +584,7 @@ export const useGlobalStore = () => {
     store.redo = function () {
         tps.doTransaction();
     }
+    
     store.updateIndex = function (index){
         storeReducer({
             type: GlobalStoreActionType.MARK_SONG,
@@ -543,11 +594,10 @@ export const useGlobalStore = () => {
     function handleKeyDown(event){
         let charCode = String.fromCharCode(event.which).toLowerCase();
         if((event.ctrlKey || event.metaKey)) {
-            if((event.ctrlKey || event.metaKey) && charCode === 'z'){
+            if((event.ctrlKey || event.metaKey) && charCode === 'z'){  
                 store.undo();
-
             }
-            else if((event.ctrlKey || event.metaKey) && charCode === 'y') {
+            else if((event.ctrlKey || event.metaKey) && charCode === 'y') {    
                 store.redo();
             }
         }
@@ -555,10 +605,12 @@ export const useGlobalStore = () => {
             event.stopPropagation();
         }
     }
-
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
     store.setIsListNameEditActive = function () {
-
+        async function asyncCreateNewList(newPlayList) {
+        
+        }
+        
     }
     document.onkeydown =(e) => handleKeyDown(e)
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT

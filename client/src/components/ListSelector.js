@@ -10,7 +10,7 @@ import { GlobalStoreContext } from '../store'
 const ListSelector = () => {
     const { store } = useContext(GlobalStoreContext);
     store.history = useHistory();
-
+    let addListClass = "playlister-button";
     useEffect(() => {
         store.loadIdNamePairs();
     }, []);
@@ -19,6 +19,7 @@ const ListSelector = () => {
         store.createNewList();
     }
     let listCard = "";
+    
     if (store) {
         listCard = store.idNamePairs.map((pair) => (
             <ListCard
@@ -36,9 +37,9 @@ const ListSelector = () => {
                     type="button"
                     id="add-list-button"
                     onClick={handleCreateNewList}
-                    className="playlister-button"
+                    className= {addListClass}
                     value="+" />
-                    Your Lists
+                    Your Playlists
             </div>                {
                     listCard
                 }

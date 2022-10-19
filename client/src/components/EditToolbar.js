@@ -11,7 +11,11 @@ function EditToolbar() {
     const { store } = useContext(GlobalStoreContext);
     const history = useHistory();
 
-    let enabledButtonClass = "playlister-button";
+    let addbuttonclass = "playlister-button";
+    let closebuttonclass = "playlister-button";
+    let undobuttonclass ="playlister-button";
+    let redobuttonclass ="playlister-button";
+    
     function handleAdd(){
         store.addAddSongTransaction();
     }
@@ -25,42 +29,77 @@ function EditToolbar() {
         history.push("/");
         store.closeCurrentList();
     }
-    let editStatus = false;
-    if (store.isListNameEditActive) {
-        editStatus = true;
+    
+    if(!addbuttonclass.includes("disabled")){addbuttonclass += "-disabled"}
+    if(!closebuttonclass.includes("disabled")){closebuttonclass += "-disabled"}
+    if(!undobuttonclass.includes("disabled")){undobuttonclass += "-disabled"}
+    if(!redobuttonclass.includes("disabled")){redobuttonclass += "-disabled"}
+    
+    let addButtonStatus = true;
+    let undoButtonStatus = true;
+    let redoButtonStatus = true;
+    let closeButtonStatus = true;
+    if (store.currentList != null) {
+        if(store.isModalShown == true){
+            addButtonStatus = true;
+            if(!addbuttonclass.includes("disabled")){addbuttonclass += "-disabled"}
+            closeButtonStatus = true;
+            if(!closebuttonclass.includes("disabled")){closebuttonclass += "-disabled"}
+            undoButtonStatus = true;
+            if(!undobuttonclass.includes("disabled")){undobuttonclass += "-disabled"}
+            redoButtonStatus = true;
+            if(!redobuttonclass.includes("disabled")){redobuttonclass += "-disabled"}       
+        }
+        else{
+            addButtonStatus = false;
+            addbuttonclass = "playlister-button"
+            closeButtonStatus = false;
+            closebuttonclass = "playlister-button"
+            if(store.canUndo() == false){
+                undoButtonStatus = false;
+                undobuttonclass = "playlister-button"
+            }
+            if(store.canRedo() == false){
+                redoButtonStatus = false;
+                redobuttonclass = "playlister-button"
+            }
+        }
+    }
+    else{
+        
     }
     return (
         <span id="edit-toolbar">
             <input
                 type="button"
                 id='add-song-button'
-                disabled={editStatus}
+                disabled={addButtonStatus}
                 value="+"
-                className={enabledButtonClass}
+                className={addbuttonclass}
                 onClick={handleAdd}
             />
             <input
                 type="button"
                 id='undo-button'
-                disabled={editStatus}
+                disabled={undoButtonStatus}
                 value="⟲"
-                className={enabledButtonClass}
+                className={undobuttonclass}
                 onClick={handleUndo}
             />
             <input
                 type="button"
                 id='redo-button'
-                disabled={editStatus}
+                disabled={redoButtonStatus}
                 value="⟳"
-                className={enabledButtonClass}
+                className={redobuttonclass}
                 onClick={handleRedo}
             />
             <input
                 type="button"
                 id='close-button'
-                disabled={editStatus}
+                disabled={closeButtonStatus}
                 value="&#x2715;"
-                className={enabledButtonClass}
+                className={closebuttonclass}
                 onClick={handleClose}
             />
         </span>);

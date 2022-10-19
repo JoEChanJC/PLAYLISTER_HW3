@@ -161,6 +161,7 @@ input {
 
 .disabled {
   background-color: lightgray;
+  
 }
 
 .disabled:hover {
