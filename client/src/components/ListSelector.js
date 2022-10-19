@@ -19,7 +19,7 @@ const ListSelector = () => {
         store.createNewList();
     }
     let listCard = "";
-    
+
     if (store) {
         listCard = store.idNamePairs.map((pair) => (
             <ListCard
@@ -29,18 +29,30 @@ const ListSelector = () => {
             />
         ))
     }
+    let addlistbuttonstatus = true
+    if (!addListClass.includes("disabled")) { addListClass += "-disabled" }
+    if (store.listNameActive == true) {
+        addlistbuttonstatus = true;
+        if (!addListClass.includes("disabled")) { addListClass += "-disabled" }
+    }
+    else {
+        addlistbuttonstatus = false;
+        addListClass = "playlister-button"
+    }
+
     return (
         <div id="playlist-selector">
             <div id="list-selector-list">
-            <div id="playlist-selector-heading">
-                <input
-                    type="button"
-                    id="add-list-button"
-                    onClick={handleCreateNewList}
-                    className= {addListClass}
-                    value="+" />
+                <div id="playlist-selector-heading">
+                    <input
+                        type="button"
+                        id="add-list-button"
+                        disabled={addlistbuttonstatus}
+                        onClick={handleCreateNewList}
+                        className={addListClass}
+                        value="+" />
                     Your Playlists
-            </div>                {
+                </div>                {
                     listCard
                 }
             </div>

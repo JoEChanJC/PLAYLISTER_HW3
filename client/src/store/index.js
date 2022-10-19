@@ -148,9 +148,9 @@ export const useGlobalStore = () => {
             case GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE: {
                 return setStore({
                     idNamePairs: store.idNamePairs,
-                    currentList: payload,
+                    currentList: store.currentList,
                     newListCounter: store.newListCounter,
-                    listNameActive: true,
+                    listNameActive: payload,
                     selectedPlaylist: store.selectedPlaylist,
                     indexOfSong: -1,
                     isModalShown: false
@@ -456,7 +456,6 @@ export const useGlobalStore = () => {
     // THIS FUNCTION PROCESSES CHANGING A LIST NAME
     store.changeListName = function (id, newName) {
         // GET THE LIST
-        
         async function asyncChangeListName(id) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
@@ -607,10 +606,10 @@ export const useGlobalStore = () => {
     }
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
     store.setIsListNameEditActive = function () {
-        async function asyncCreateNewList(newPlayList) {
-        
-        }
-        
+        storeReducer({
+            type: GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE,
+            payload: true
+        });
     }
     document.onkeydown =(e) => handleKeyDown(e)
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT

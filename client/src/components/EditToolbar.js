@@ -65,9 +65,6 @@ function EditToolbar() {
             }
         }
     }
-    else{
-        
-    }
     return (
         <span id="edit-toolbar">
             <input
